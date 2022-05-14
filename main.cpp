@@ -1,22 +1,18 @@
-#include <curl/curl.h>
-
-#include <stdlib.h>
-#include <string.h>
+extern "C" {
+	#include <curl/curl.h>
+	#include <stdlib.h>
+	#include <string.h>
+}
+#include "nhen_parser.hpp"
 
 #define NHEN "https://nhentai.net"
-
-struct memory
-{
-	char* response;
-	size_t size;
-};
 
 static size_t write_callback(void *contents, size_t size, size_t nmemb, void *userp)
 {
   size_t realsize = size * nmemb;
   struct memory *mem = (struct memory *)userp;
  
-  char *ptr = realloc(mem->response, mem->size + realsize + 1);
+  char *ptr = (char*)realloc(mem->response, mem->size + realsize + 1);
   if(!ptr) {
     /* out of memory! */
     printf("not enough memory (realloc returned NULL)\n");
@@ -50,8 +46,8 @@ int main()
 		printf("Failed to execute curle\n");
 		return EXIT_FAILURE;
 	}
+	else printf("CURLE_OK!\n");
 
-	printf(mem.response);
-
+	return nhen_core(mem.response, mem.size);
 }
 
